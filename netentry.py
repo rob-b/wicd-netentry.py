@@ -66,6 +66,7 @@ class AdvancedSettingsDialog(gtk.Dialog):
                                                            gtk.RESPONSE_ACCEPT))
 
         self.set_default_size()
+        self.set_border_width(5)
 
         self.connect('show', lambda *a, **k: self.set_default_size())
         self.connect('hide', lambda *a, **k: self.write_size())
@@ -115,18 +116,31 @@ class AdvancedSettingsDialog(gtk.Dialog):
         self.vbox.pack_start(self.swindow)
         
         assert(isinstance(self.cvbox, gtk.VBox))
-        self.cvbox.pack_start(self.chkbox_static_ip, fill=False, expand=False)
-        self.cvbox.pack_start(self.txt_ip, fill=False, expand=False)
-        self.cvbox.pack_start(self.txt_netmask, fill=False, expand=False)
-        self.cvbox.pack_start(self.txt_gateway, fill=False, expand=False)
-        self.cvbox.pack_start(self.hbox_dns, fill=False, expand=False)
-        self.cvbox.pack_start(self.txt_domain, fill=False, expand=False)
-        self.cvbox.pack_start(self.txt_search_dom, fill=False, expand=False)
-        self.cvbox.pack_start(self.txt_dns_1, fill=False, expand=False)
-        self.cvbox.pack_start(self.txt_dns_2, fill=False, expand=False)
-        self.cvbox.pack_start(self.txt_dns_3, fill=False, expand=False)
-        self.cvbox.pack_start(dhcp_hostname_hbox, fill=False, expand=False)
-        self.cvbox.pack_end(self.button_hbox, fill=False, expand=False, padding=5)
+        self.ip_box = gtk.VBox()
+        self.dns_box = gtk.VBox()
+        self.ip_box.set_spacing(3)
+        self.dns_box.set_spacing(3)
+        self.cvbox.set_spacing(10)
+
+        self.ip_box.pack_start(self.chkbox_static_ip, fill=False, expand=False)
+        self.ip_box.pack_start(self.txt_ip, fill=False, expand=False)
+        self.ip_box.pack_start(self.txt_netmask, fill=False, expand=False)
+        self.ip_box.pack_start(self.txt_gateway, fill=False, expand=False)
+        self.cvbox.pack_start(self.ip_box, fill=False, expand=False)
+
+        self.dns_box.pack_start(self.hbox_dns, fill=False, expand=False)
+        self.dns_box.pack_start(self.txt_domain, fill=False, expand=False)
+        self.dns_box.pack_start(self.txt_search_dom, fill=False, expand=False)
+        self.dns_box.pack_start(self.txt_dns_1, fill=False, expand=False)
+        self.dns_box.pack_start(self.txt_dns_2, fill=False, expand=False)
+        self.dns_box.pack_start(self.txt_dns_3, fill=False, expand=False)
+        self.dns_box.pack_start(dhcp_hostname_hbox, fill=False, expand=False)
+        # self.dns_box.pack_end(self.button_hbox, fill=False, expand=False, padding=5)
+        self.cvbox.pack_start(self.dns_box, fill=False, expand=False)
+
+        self.nonspecific_box = gtk.VBox()
+        self.nonspecific_box.pack_start(self.button_hbox, fill=False, expand=False, padding=5)
+        self.cvbox.pack_start(self.nonspecific_box, fill=False, expand=False)
         
         # Connect the events to the actions
         self.chkbox_static_ip.connect("toggled", self.toggle_ip_checkbox)
@@ -388,10 +402,10 @@ class WirelessSettingsDialog(AdvancedSettingsDialog):
             self.combo_encryption.set_active(0)
         self.change_encrypt_method()
 
-        self.cvbox.pack_start(self.chkbox_global_settings, False, False)
-        self.cvbox.pack_start(self.chkbox_encryption, False, False)
-        self.cvbox.pack_start(self.combo_encryption, False, False)
-        self.cvbox.pack_start(self.vbox_encrypt_info, False, False)
+        self.nonspecific_box.pack_start(self.chkbox_global_settings, False, False)
+        self.nonspecific_box.pack_start(self.chkbox_encryption, False, False)
+        self.nonspecific_box.pack_start(self.combo_encryption, False, False)
+        self.nonspecific_box.pack_start(self.vbox_encrypt_info, False, False)
         
         # Connect signals.
         self.chkbox_encryption.connect("toggled", self.toggle_encryption)
@@ -983,7 +997,14 @@ class WirelessInformationDialog(gtk.Dialog):
         self.set_has_separator(False)
         table = gtk.Table(5, 2)
         table.set_col_spacings(12) 
+        table.set_row_spacings(5)
         vbox.pack_start(table)
+
+        # apply some spacing between the labels and the window edge
+        self.set_border_width(5)
+
+        # increase spacing between the table and the close button
+        vbox.set_spacing(10)
         
         # Pack the network status HBox.
         table.attach(LeftAlignedLabel('Signal strength:'), 0, 1, 0, 1)
